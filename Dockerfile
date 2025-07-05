@@ -28,7 +28,14 @@ RUN apk update && \
     build-base \
     linux-headers \
     libffi-dev \
-    openssl-dev && \
+    openssl-dev \
+    # Additional dependencies for building Frida
+    meson \
+    ninja \
+    vala \
+    pkgconf \
+    glib-dev \
+    libusb-dev && \
     rm -rf /var/cache/apk/*
 
 # Install Android SDK Platform-Tools (adb, fastboot)
