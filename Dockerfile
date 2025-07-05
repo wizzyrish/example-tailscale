@@ -35,7 +35,10 @@ RUN apk update && \
     vala \
     pkgconf \
     glib-dev \
-    libusb-dev && \
+    libusb-dev \
+    # Add Node.js and npm for Frida's build process
+    nodejs \
+    npm && \
     rm -rf /var/cache/apk/*
 
 # Install Android SDK Platform-Tools (adb, fastboot)
