@@ -39,7 +39,8 @@ ENV PATH="/opt/android-sdk/platform-tools:${PATH}"
 
 # Install Apktool
 # Apktool requires Java, which is already installed above (openjdk17-jre-headless)
-ENV APKTOOL_VERSION=2.9.3 # Check https://apktool.org/ for the latest version
+# Check https://apktool.org/ for the latest version
+ENV APKTOOL_VERSION=2.9.3
 RUN wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_VERSION}.jar -O /usr/local/bin/apktool.jar && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/apktool.jar "$@"' > /usr/local/bin/apktool && \
     chmod +x /usr/local/bin/apktool
@@ -51,7 +52,7 @@ RUN pip3 install --no-cache-dir frida-tools
 # and would be injected into the APK, not globally installed as a Python package for direct use
 # in the Docker image. However, the `frida-gadget` PyPI package helps with patching.
 # If you need the actual frida-gadget binary, you'd download it from Frida's releases
-# page based on your target architecture and copy it.
+# page based on your target architecture and copy it.)
 # The PyPI package for frida-gadget is for a Python utility to patch APKs.)
 RUN pip3 install --no-cache-dir frida-gadget
 
@@ -75,4 +76,3 @@ RUN mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale
 
 # Run on container startup.
 CMD ["/app/start.sh"]
-
