@@ -46,7 +46,7 @@ RUN wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_V
     chmod +x /usr/local/bin/apktool
 
 # Install Frida tools
-RUN pip3 install --no-cache-dir frida-tools
+RUN pip3 install --no-cache-dir frida-tools --break-system-packages
 
 # Install frida-gadget (this is typically distributed as a binary for specific architectures
 # and would be injected into the APK, not globally installed as a Python package for direct use
@@ -54,7 +54,7 @@ RUN pip3 install --no-cache-dir frida-tools
 # If you need the actual frida-gadget binary, you'd download it from Frida's releases
 # page based on your target architecture and copy it.)
 # The PyPI package for frida-gadget is for a Python utility to patch APKs.)
-RUN pip3 install --no-cache-dir frida-gadget
+RUN pip3 install --no-cache-dir frida-gadget --break-system-packages
 
 # Install other useful tools for app modification
 RUN apk add --no-cache \
