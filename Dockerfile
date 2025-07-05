@@ -51,9 +51,9 @@ RUN wget https://dl.google.com/android/repository/platform-tools-latest-linux.zi
 
 # To get aapt, we need Android SDK Build-Tools. This is usually large,
 # but can be obtained by installing a specific version of build-tools.
-# Let's try to download a recent one and extract aapt.
 # Find a suitable version from https://developer.android.com/tools/releases/build-tools
-ENV ANDROID_BUILD_TOOLS_VERSION="34.0.0" # Example version, choose a stable one
+# Example version, choose a stable one
+ENV ANDROID_BUILD_TOOLS_VERSION="34.0.0"
 RUN wget https://dl.google.com/android/repository/build-tools_r${ANDROID_BUILD_TOOLS_VERSION}-linux.zip -O /tmp/build-tools.zip && \
     unzip /tmp/build-tools.zip -d ${ANDROID_SDK_ROOT}/build-tools/ && \
     mv ${ANDROID_SDK_ROOT}/build-tools/${ANDROID_BUILD_TOOLS_VERSION} ${ANDROID_SDK_ROOT}/build-tools/latest && \
@@ -71,7 +71,8 @@ RUN wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_V
 
 # Install Smali/Baksmali (often bundled with Apktool, or from JesusFreke's GitHub)
 # Apktool uses smali/baksmali internally, but if you need direct CLI access:
-ENV SMALI_VERSION="2.5.2" # Check https://github.com/JesusFreke/smali/releases for latest
+# Check https://github.com/JesusFreke/smali/releases for latest
+ENV SMALI_VERSION="2.5.2"
 RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/smali-${SMALI_VERSION}.jar -O /usr/local/bin/smali.jar && \
     wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/baksmali-${SMALI_VERSION}.jar -O /usr/local/bin/baksmali.jar && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/smali.jar "$@"' > /usr/local/bin/smali && \
@@ -80,7 +81,8 @@ RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}
 
 
 # Install Dex2jar
-ENV DEX2JAR_VERSION="2.1" # Check https://github.com/pxb1988/dex2jar/releases for latest
+# Check https://github.com/pxb1988/dex2jar/releases for latest
+ENV DEX2JAR_VERSION="2.1"
 RUN wget https://github.com/pxb1988/dex2jar/releases/download/${DEX2JAR_VERSION}/dex2jar-${DEX2JAR_VERSION}.zip -O /tmp/dex2jar.zip && \
     unzip /tmp/dex2jar.zip -d /opt/dex2jar && \
     rm /tmp/dex2jar.zip && \
@@ -89,7 +91,8 @@ RUN wget https://github.com/pxb1988/dex2jar/releases/download/${DEX2JAR_VERSION}
 
 
 # Install Jadx
-ENV JADX_VERSION="1.4.0" # Check https://github.com/skylot/jadx/releases for latest CLI-only version
+# Check https://github.com/skylot/jadx/releases for latest CLI-only version
+ENV JADX_VERSION="1.4.0"
 RUN wget https://github.com/skylot/jadx/releases/download/v${JADX_VERSION}/jadx-${JADX_VERSION}.zip -O /tmp/jadx.zip && \
     unzip /tmp/jadx.zip -d /opt/jadx && \
     rm /tmp/jadx.zip && \
