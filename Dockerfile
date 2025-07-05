@@ -54,7 +54,7 @@ RUN wget https://dl.google.com/android/repository/platform-tools-latest-linux.zi
 # Find a suitable version from https://developer.android.com/tools/releases/build-tools
 # Example version, choose a stable one
 ENV ANDROID_BUILD_TOOLS_VERSION="34.0.0"
-RUN wget https://dl.google.com/android/repository/build-tools_r${ANDROID_BUILD_TOOLS_VERSION}-linux.zip -O /tmp/build-tools.zip && \
+RUN wget https://dl.google.com/android/repository/build-tools/${ANDROID_BUILD_TOOLS_VERSION}/build-tools_r${ANDROID_BUILD_TOOLS_VERSION}-linux.zip -O /tmp/build-tools.zip && \
     unzip /tmp/build-tools.zip -d ${ANDROID_SDK_ROOT}/build-tools/ && \
     mv ${ANDROID_SDK_ROOT}/build-tools/${ANDROID_BUILD_TOOLS_VERSION} ${ANDROID_SDK_ROOT}/build-tools/latest && \
     rm /tmp/build-tools.zip
