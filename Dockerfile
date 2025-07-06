@@ -45,22 +45,16 @@ RUN apk update && \
 # Define Android SDK Root
 ENV ANDROID_SDK_ROOT="/opt/android-sdk"
 
-# =================================================================
-# CORRECTED SECTION
-# =================================================================
 # Install Android SDK Command-line Tools (includes sdkmanager)
 # The downloaded zip contains a nested 'cmdline-tools' folder. We must extract its contents
 # to the standard <sdk_root>/cmdline-tools/latest location.
+# NOTE: The Google download URL with a build number can become outdated.
 RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools/latest && \
     wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O /tmp/commandlinetools.zip && \
-    # Unzip to a temporary directory first
     unzip -q /tmp/commandlinetools.zip -d /tmp/sdk-temp && \
-    # Move the contents of the nested folder to the correct final destination
     mv /tmp/sdk-temp/cmdline-tools/* ${ANDROID_SDK_ROOT}/cmdline-tools/latest/ && \
-    # Clean up temporary files and directories
     rm /tmp/commandlinetools.zip && \
     rm -rf /tmp/sdk-temp
-# =================================================================
 
 # Now set the PATH correctly, pointing to the 'bin' inside the 'latest' folder
 ENV PATH="${PATH}:${ANDROID_SDK_ROOT}/platform-tools:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin"
@@ -72,28 +66,36 @@ RUN yes | sdkmanager --licenses
 RUN sdkmanager "platform-tools"
 
 # Install Android SDK Build-Tools (includes aapt/aapt2)
-# Choose a stable and relatively recent version. 34.0.0 is latest, but you can try 33.0.2 or 30.0.3 if issues persist.
 ENV ANDROID_BUILD_TOOLS_VERSION="34.0.0"
 RUN sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
 
 
-# Install Apktool (already handled, keeping it for completeness)
-# Apktool requires Java, which is already installed above (openjdk17-jre-headless)
+# Install Apktool
 # Check https://apktool.org/ for the latest version
 ENV APKTOOL_VERSION=2.9.3
 RUN wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_VERSION}.jar -O /usr/local/bin/apktool.jar && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/apktool.jar "$@"' > /usr/local/bin/apktool && \
     chmod +x /usr/local/bin/apktool
 
-# Install Smali/Baksmali (often bundled with Apktool, or from JesusFreke's GitHub)
-# Apktool uses smali/baksmali internally, but if you need direct CLI access:
-# Check https://github.com/JesusFreke/smali/releases for latest
-ENV SMALI_VERSION="2.5.2"
-RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/smali-${SMALI_VERSION}.jar -O /usr/local/bin/smali.jar && \
-    wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/baksmali-${SMALI_VERSION}.jar -O /usr/local/bin/baksmali.jar && \
+# =================================================================
+# CORRECTED SECTION
+# =================================================================
+# Install Smali/Baksmali (from JesusFreke's GitHub)
+# Recent versions bundle smali and baksmali into a single zip archive.
+# Check https://github.com/JesusFreke/smali/releases for latest version.
+ENV SMALI_VERSION="3.0.5"
+RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/smali-${SMALI_VERSION}.zip -O /tmp/smali.zip && \
+    unzip /tmp/smali.zip -d /tmp/smali-temp && \
+    # Move the jar files to the final destination
+    mv /tmp/smali-temp/smali-${SMALI_VERSION}.jar /usr/local/bin/smali.jar && \
+    mv /tmp/smali-temp/baksmali-${SMALI_VERSION}.jar /usr/local/bin/baksmali.jar && \
+    # Create the executable wrappers
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/smali.jar "$@"' > /usr/local/bin/smali && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/baksmali.jar "$@"' > /usr/local/bin/baksmali && \
-    chmod +x /usr/local/bin/smali /usr/local/bin/baksmali
+    chmod +x /usr/local/bin/smali /usr/local/bin/baksmali && \
+    # Clean up
+    rm -rf /tmp/smali.zip /tmp/smali-temp
+# =================================================================
 
 
 # Install Dex2jar
@@ -103,17 +105,17 @@ RUN wget https://github.com/pxb1988/dex2jar/releases/download/${DEX2JAR_VERSION}
     unzip /tmp/dex2jar.zip -d /opt/dex2jar && \
     rm /tmp/dex2jar.zip && \
     chmod +x /opt/dex2jar/dex2jar-${DEX2JAR_VERSION}/*.sh && \
-    ln -s /opt/dex2jar/dex2jar-${DEX2JAR_VERSION}/*.sh /usr/local/bin/ # Create symlinks for easier access
+    ln -s /opt/dex2jar/dex2jar-${DEX2JAR_VERSION}/*.sh /usr/local/bin/
 
 
 # Install Jadx
 # Check https://github.com/skylot/jadx/releases for latest CLI-only version
-ENV JADX_VERSION="1.4.0"
+ENV JADX_VERSION="1.5.0"
 RUN wget https://github.com/skylot/jadx/releases/download/v${JADX_VERSION}/jadx-${JADX_VERSION}.zip -O /tmp/jadx.zip && \
     unzip /tmp/jadx.zip -d /opt/jadx && \
     rm /tmp/jadx.zip && \
     chmod +x /opt/jadx/bin/jadx && \
-    ln -s /opt/jadx/bin/jadx /usr/local/bin/jadx # Create symlink for easier access
+    ln -s /opt/jadx/bin/jadx /usr/local/bin/jadx
 
 
 # Install Frida tools
