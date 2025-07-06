@@ -73,28 +73,30 @@ RUN wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_V
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/apktool.jar "$@"' > /usr/local/bin/apktool && \
     chmod +x /usr/local/bin/apktool
 
-# =================================================================
-# CORRECTED SECTION
-# =================================================================
 # Install Smali/Baksmali
-# THE DOWNLOADS ARE ON BITBUCKET, NOT GITHUB. THIS WAS THE PROBLEM.
-# Using v2.5.2 which is a known stable version available there.
+# THE DOWNLOADS ARE ON BITBUCKET, NOT GITHUB.
 ENV SMALI_VERSION="2.5.2"
 RUN wget https://bitbucket.org/JesusFreke/smali/downloads/smali-${SMALI_VERSION}.jar -O /usr/local/bin/smali.jar && \
     wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-${SMALI_VERSION}.jar -O /usr/local/bin/baksmali.jar && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/smali.jar "$@"' > /usr/local/bin/smali && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/baksmali.jar "$@"' > /usr/local/bin/baksmali && \
     chmod +x /usr/local/bin/smali /usr/local/bin/baksmali
+
 # =================================================================
-
-
+# CORRECTED SECTION
+# =================================================================
 # Install Dex2jar
+# The release asset naming for v2.1 is also inconsistent.
+# The tag is 'v2.1' and the zip is named 'dex-tools-v2.1.zip'.
 ENV DEX2JAR_VERSION="2.1"
-RUN wget https://github.com/pxb1988/dex2jar/releases/download/${DEX2JAR_VERSION}/dex2jar-${DEX2JAR_VERSION}.zip -O /tmp/dex2jar.zip && \
-    unzip /tmp/dex2jar.zip -d /opt/dex2jar && \
-    rm /tmp/dex2jar.zip && \
-    chmod +x /opt/dex2jar/dex2jar-${DEX2JAR_VERSION}/*.sh && \
-    ln -s /opt/dex2jar/dex2jar-${DEX2JAR_VERSION}/*.sh /usr/local/bin/
+RUN wget https://github.com/pxb1988/dex2jar/releases/download/v${DEX2JAR_VERSION}/dex-tools-v${DEX2JAR_VERSION}.zip -O /tmp/dex2jar.zip && \
+    unzip /tmp/dex2jar.zip -d /opt/dex2jar-unzipped && \
+    # The folder name inside the zip is also inconsistent, so we move it to a generic name
+    mv /opt/dex2jar-unzipped/dex-tools-v${DEX2JAR_VERSION} /opt/dex2jar && \
+    rm -rf /tmp/dex2jar.zip /opt/dex2jar-unzipped && \
+    chmod +x /opt/dex2jar/*.sh && \
+    ln -s /opt/dex2jar/*.sh /usr/local/bin/
+# =================================================================
 
 
 # Install Jadx
