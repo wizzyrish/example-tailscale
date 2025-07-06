@@ -1,10 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
-/app/tailscaled --tun=userspace-networking --socks5-server=localhost:1055 &
-until /app/tailscale up --authkey=${TAILSCALE_AUTHKEY} --hostname=${TAILSCALE_HOSTNAME}
-do
-    sleep 0.1
-done
-echo Tailscale started
-ALL_PROXY=socks5://localhost:1055/ /app/my-app
+# Start tailscaled in the background
+/app/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
 
+# Bring the Tailscale interface up
+# This uses the auth key from your environment variables
+# You can add --hostname=my-cool-app or other flags here
+/app/tailscale up --authkey=${TS_AUTHKEY} --accept-routes
+
+# Start your actual application
+# Replace '/app/my-app' with your actual app's command if different
+echo "Starting main application..."
+/app/my-app
+
+# Keep the script running
+wait $!
