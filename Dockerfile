@@ -77,8 +77,9 @@ RUN wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_V
 # CORRECTED SECTION
 # =================================================================
 # Install Smali/Baksmali (from JesusFreke's GitHub)
-# The correct pattern for v3.0.6 is tool-version.jar
-ENV SMALI_VERSION="3.0.6"
+# Versions 3.0.5 and 3.0.6 DO NOT have JARs in their GitHub releases.
+# We are falling back to v2.5.2, which is stable and has the required assets.
+ENV SMALI_VERSION="2.5.2"
 RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/smali-${SMALI_VERSION}.jar -O /usr/local/bin/smali.jar && \
     wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/baksmali-${SMALI_VERSION}.jar -O /usr/local/bin/baksmali.jar && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/smali.jar "$@"' > /usr/local/bin/smali && \
