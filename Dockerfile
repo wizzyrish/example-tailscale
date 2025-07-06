@@ -76,12 +76,12 @@ RUN wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_V
 # =================================================================
 # CORRECTED SECTION
 # =================================================================
-# Install Smali/Baksmali (from JesusFreke's GitHub)
-# Versions 3.0.5 and 3.0.6 DO NOT have JARs in their GitHub releases.
-# We are falling back to v2.5.2, which is stable and has the required assets.
+# Install Smali/Baksmali
+# THE DOWNLOADS ARE ON BITBUCKET, NOT GITHUB. THIS WAS THE PROBLEM.
+# Using v2.5.2 which is a known stable version available there.
 ENV SMALI_VERSION="2.5.2"
-RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/smali-${SMALI_VERSION}.jar -O /usr/local/bin/smali.jar && \
-    wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/baksmali-${SMALI_VERSION}.jar -O /usr/local/bin/baksmali.jar && \
+RUN wget https://bitbucket.org/JesusFreke/smali/downloads/smali-${SMALI_VERSION}.jar -O /usr/local/bin/smali.jar && \
+    wget https://bitbucket.org/JesusFreke/smali/downloads/baksmali-${SMALI_VERSION}.jar -O /usr/local/bin/baksmali.jar && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/smali.jar "$@"' > /usr/local/bin/smali && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/baksmali.jar "$@"' > /usr/local/bin/baksmali && \
     chmod +x /usr/local/bin/smali /usr/local/bin/baksmali
