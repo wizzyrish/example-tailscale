@@ -48,7 +48,6 @@ ENV ANDROID_SDK_ROOT="/opt/android-sdk"
 # Install Android SDK Command-line Tools (includes sdkmanager)
 # The downloaded zip contains a nested 'cmdline-tools' folder. We must extract its contents
 # to the standard <sdk_root>/cmdline-tools/latest location.
-# NOTE: The Google download URL with a build number can become outdated.
 RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools/latest && \
     wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O /tmp/commandlinetools.zip && \
     unzip -q /tmp/commandlinetools.zip -d /tmp/sdk-temp && \
@@ -81,14 +80,14 @@ RUN wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_V
 # CORRECTED SECTION
 # =================================================================
 # Install Smali/Baksmali (from JesusFreke's GitHub)
-# Recent versions bundle smali and baksmali into a single zip archive.
+# The file is now named smali-vX.X.X.zip and the JARs inside do not have version numbers.
 # Check https://github.com/JesusFreke/smali/releases for latest version.
 ENV SMALI_VERSION="3.0.5"
-RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/smali-${SMALI_VERSION}.zip -O /tmp/smali.zip && \
+RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/smali-v${SMALI_VERSION}.zip -O /tmp/smali.zip && \
     unzip /tmp/smali.zip -d /tmp/smali-temp && \
-    # Move the jar files to the final destination
-    mv /tmp/smali-temp/smali-${SMALI_VERSION}.jar /usr/local/bin/smali.jar && \
-    mv /tmp/smali-temp/baksmali-${SMALI_VERSION}.jar /usr/local/bin/baksmali.jar && \
+    # Move the jar files (which no longer have version numbers in their names)
+    mv /tmp/smali-temp/smali.jar /usr/local/bin/smali.jar && \
+    mv /tmp/smali-temp/baksmali.jar /usr/local/bin/baksmali.jar && \
     # Create the executable wrappers
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/smali.jar "$@"' > /usr/local/bin/smali && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/baksmali.jar "$@"' > /usr/local/bin/baksmali && \
