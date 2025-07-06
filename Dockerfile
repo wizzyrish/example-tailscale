@@ -44,13 +44,18 @@ RUN apk update && \
 
 # Define Android SDK Root
 ENV ANDROID_SDK_ROOT="/opt/android-sdk"
-ENV PATH="${PATH}:${ANDROID_SDK_ROOT}/platform-tools:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin"
 
 # Install Android SDK Command-line Tools (includes sdkmanager)
-RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools && \
+# Fix: Extract directly into a 'cmdline-tools' named folder under ANDROID_SDK_ROOT/cmdline-tools/latest
+# The downloaded zip contains a 'cmdline-tools' folder at its root.
+# We want its *contents* to be in ${ANDROID_SDK_ROOT}/cmdline-tools/latest/
+RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools/latest && \
     wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O /tmp/commandlinetools.zip && \
     unzip /tmp/commandlinetools.zip -d ${ANDROID_SDK_ROOT}/cmdline-tools/latest && \
     rm /tmp/commandlinetools.zip
+
+# Now set the PATH correctly, pointing to the 'bin' inside the 'latest' folder
+ENV PATH="${PATH}:${ANDROID_SDK_ROOT}/platform-tools:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin"
 
 # Accept Android SDK licenses - REQUIRED for sdkmanager to work
 RUN yes | sdkmanager --licenses
