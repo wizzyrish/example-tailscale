@@ -77,11 +77,10 @@ RUN wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_V
 # CORRECTED SECTION
 # =================================================================
 # Install Smali/Baksmali (from JesusFreke's GitHub)
-# The assets are now individual JAR files, not a combined zip.
-# We download them directly and create the wrappers.
+# The asset names for this specific version on GitHub do not include the version number.
 ENV SMALI_VERSION="3.0.5"
-RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/smali-${SMALI_VERSION}.jar -O /usr/local/bin/smali.jar && \
-    wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/baksmali-${SMALI_VERSION}.jar -O /usr/local/bin/baksmali.jar && \
+RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/smali.jar -O /usr/local/bin/smali.jar && \
+    wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/baksmali.jar -O /usr/local/bin/baksmali.jar && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/smali.jar "$@"' > /usr/local/bin/smali && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/baksmali.jar "$@"' > /usr/local/bin/baksmali && \
     chmod +x /usr/local/bin/smali /usr/local/bin/baksmali
