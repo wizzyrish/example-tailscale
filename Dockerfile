@@ -83,26 +83,28 @@ RUN wget https://bitbucket.org/JesusFreke/smali/downloads/smali-${SMALI_VERSION}
     chmod +x /usr/local/bin/smali /usr/local/bin/baksmali
 
 # =================================================================
-# CORRECTED SECTION
+# CORRECTED SECTION USING USER-PROVIDED LINKS
 # =================================================================
 # Install Dex2jar
-# The original file was missing the 'v' in the release tag path.
-ENV DEX2JAR_VERSION="2.1"
-RUN wget https://github.com/pxb1988/dex2jar/releases/download/v${DEX2JAR_VERSION}/dex2jar-${DEX2JAR_VERSION}.zip -O /tmp/dex2jar.zip && \
-    unzip /tmp/dex2jar.zip -d /opt && \
-    rm /tmp/dex2jar.zip && \
-    chmod +x /opt/dex2jar-${DEX2JAR_VERSION}/*.sh && \
-    ln -s /opt/dex2jar-${DEX2JAR_VERSION}/*.sh /usr/local/bin/
-# =================================================================
-
+# Using the correct link for v2.4 provided by the user.
+ENV DEX2JAR_VERSION="2.4"
+RUN wget https://github.com/pxb1988/dex2jar/releases/download/v${DEX2JAR_VERSION}/dex-tools-v${DEX2JAR_VERSION}.zip -O /tmp/dex2jar.zip && \
+    unzip /tmp/dex2jar.zip -d /opt/dex2jar-unzipped && \
+    # Move the correctly named inner folder to a generic path
+    mv /opt/dex2jar-unzipped/dex-tools-v${DEX2JAR_VERSION} /opt/dex2jar && \
+    rm -rf /tmp/dex2jar.zip /opt/dex2jar-unzipped && \
+    chmod +x /opt/dex2jar/*.sh && \
+    ln -s /opt/dex2jar/*.sh /usr/local/bin/
 
 # Install Jadx
-ENV JADX_VERSION="1.5.0"
+# Updating to v1.5.2 based on user's research
+ENV JADX_VERSION="1.5.2"
 RUN wget https://github.com/skylot/jadx/releases/download/v${JADX_VERSION}/jadx-${JADX_VERSION}.zip -O /tmp/jadx.zip && \
     unzip /tmp/jadx.zip -d /opt/jadx && \
     rm /tmp/jadx.zip && \
     chmod +x /opt/jadx/bin/jadx && \
     ln -s /opt/jadx/bin/jadx /usr/local/bin/jadx
+# =================================================================
 
 
 # Install Frida tools
