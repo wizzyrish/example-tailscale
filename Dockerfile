@@ -77,10 +77,10 @@ RUN wget https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_${APKTOOL_V
 # CORRECTED SECTION
 # =================================================================
 # Install Smali/Baksmali (from JesusFreke's GitHub)
-# Upgrading to the latest version (3.0.6) which has consistent, simple filenames.
+# The correct pattern for v3.0.6 is tool-version.jar
 ENV SMALI_VERSION="3.0.6"
-RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/smali.jar -O /usr/local/bin/smali.jar && \
-    wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/baksmali.jar -O /usr/local/bin/baksmali.jar && \
+RUN wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/smali-${SMALI_VERSION}.jar -O /usr/local/bin/smali.jar && \
+    wget https://github.com/JesusFreke/smali/releases/download/v${SMALI_VERSION}/baksmali-${SMALI_VERSION}.jar -O /usr/local/bin/baksmali.jar && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/smali.jar "$@"' > /usr/local/bin/smali && \
     echo '#!/usr/bin/env sh\njava -jar /usr/local/bin/baksmali.jar "$@"' > /usr/local/bin/baksmali && \
     chmod +x /usr/local/bin/smali /usr/local/bin/baksmali
