@@ -25,6 +25,7 @@ RUN apk update && \
     unzip \
     curl \
     git \
+    bash \
     build-base \
     linux-headers \
     libffi-dev \
@@ -41,24 +42,26 @@ RUN apk update && \
     procps && \
     rm -rf /var/cache/apk/*
 
-# Install Android SDK Platform-Tools (adb, fastboot) - aapt is part of this
-# This will install aapt (aapt/aapt2 are in the 'build-tools' directory of the SDK)
+# Define Android SDK Root
 ENV ANDROID_SDK_ROOT="/opt/android-sdk"
-ENV PATH="${PATH}:${ANDROID_SDK_ROOT}/platform-tools"
-RUN wget https://dl.google.com/android/repository/platform-tools-latest-linux.zip -O /tmp/platform-tools-latest-linux.zip && \
-    unzip /tmp/platform-tools-latest-linux.zip -d ${ANDROID_SDK_ROOT} && \
-    rm /tmp/platform-tools-latest-linux.zip
+ENV PATH="${PATH}:${ANDROID_SDK_ROOT}/platform-tools:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin"
 
-# To get aapt, we need Android SDK Build-Tools. This is usually large,
-# but can be obtained by installing a specific version of build-tools.
-# Find a suitable version from https://developer.android.com/tools/releases/build-tools
-# Example version, choose a stable one
+# Install Android SDK Command-line Tools (includes sdkmanager)
+RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools && \
+    wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O /tmp/commandlinetools.zip && \
+    unzip /tmp/commandlinetools.zip -d ${ANDROID_SDK_ROOT}/cmdline-tools/latest && \
+    rm /tmp/commandlinetools.zip
+
+# Accept Android SDK licenses - REQUIRED for sdkmanager to work
+RUN yes | sdkmanager --licenses
+
+# Install Android SDK Platform-Tools (adb, fastboot)
+RUN sdkmanager "platform-tools"
+
+# Install Android SDK Build-Tools (includes aapt/aapt2)
+# Choose a stable and relatively recent version. 34.0.0 is latest, but you can try 33.0.2 or 30.0.3 if issues persist.
 ENV ANDROID_BUILD_TOOLS_VERSION="34.0.0"
-RUN wget https://dl.google.com/android/repository/build-tools/${ANDROID_BUILD_TOOLS_VERSION}/build-tools_r${ANDROID_BUILD_TOOLS_VERSION}-linux.zip -O /tmp/build-tools.zip && \
-    unzip /tmp/build-tools.zip -d ${ANDROID_SDK_ROOT}/build-tools/ && \
-    mv ${ANDROID_SDK_ROOT}/build-tools/${ANDROID_BUILD_TOOLS_VERSION} ${ANDROID_SDK_ROOT}/build-tools/latest && \
-    rm /tmp/build-tools.zip
-ENV PATH="${PATH}:${ANDROID_SDK_ROOT}/build-tools/latest"
+RUN sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
 
 
 # Install Apktool (already handled, keeping it for completeness)
