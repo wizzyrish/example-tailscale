@@ -45,14 +45,22 @@ RUN apk update && \
 # Define Android SDK Root
 ENV ANDROID_SDK_ROOT="/opt/android-sdk"
 
+# =================================================================
+# CORRECTED SECTION
+# =================================================================
 # Install Android SDK Command-line Tools (includes sdkmanager)
-# Fix: Extract directly into a 'cmdline-tools' named folder under ANDROID_SDK_ROOT/cmdline-tools/latest
-# The downloaded zip contains a 'cmdline-tools' folder at its root.
-# We want its *contents* to be in ${ANDROID_SDK_ROOT}/cmdline-tools/latest/
+# The downloaded zip contains a nested 'cmdline-tools' folder. We must extract its contents
+# to the standard <sdk_root>/cmdline-tools/latest location.
 RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools/latest && \
     wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O /tmp/commandlinetools.zip && \
-    unzip /tmp/commandlinetools.zip -d ${ANDROID_SDK_ROOT}/cmdline-tools/latest && \
-    rm /tmp/commandlinetools.zip
+    # Unzip to a temporary directory first
+    unzip -q /tmp/commandlinetools.zip -d /tmp/sdk-temp && \
+    # Move the contents of the nested folder to the correct final destination
+    mv /tmp/sdk-temp/cmdline-tools/* ${ANDROID_SDK_ROOT}/cmdline-tools/latest/ && \
+    # Clean up temporary files and directories
+    rm /tmp/commandlinetools.zip && \
+    rm -rf /tmp/sdk-temp
+# =================================================================
 
 # Now set the PATH correctly, pointing to the 'bin' inside the 'latest' folder
 ENV PATH="${PATH}:${ANDROID_SDK_ROOT}/platform-tools:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin"
