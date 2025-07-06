@@ -1,11 +1,14 @@
 #!/bin/bash
 
 # Start tailscaled in the background
-/app/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
+# The --tun=userspace-networking flag is CRITICAL for environments that don't have /dev/net/tun
+/app/tailscaled --tun=userspace-networking --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock &
+
+# Give tailscaled a moment to start up
+sleep 3
 
 # Bring the Tailscale interface up
 # This uses the auth key from your environment variables
-# You can add --hostname=my-cool-app or other flags here
 /app/tailscale up --authkey=${TS_AUTHKEY} --accept-routes
 
 # Start your actual application
